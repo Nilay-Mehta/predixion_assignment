@@ -51,8 +51,11 @@ Filled in after reviewing each trace JSON; rubric definitions in `evals/rubric.m
 
 | Query | Plan quality | Tool selection | Source grounding | Confidence calibration | Edge case handling | Total |
 |---|---|---|---|---|---|---|
-| vector_dbs | _ | _ | _ | _ | _ | _ /25 |
-| indian_hr_saas | _ | _ | _ | _ | _ | _ /25 |
-| mojo_state | _ | _ | _ | _ | _ | _ /25 |
-| nonexistent_startup | _ | _ | _ | _ | _ | _ /25 |
-| trivial_math | _ | _ | _ | _ | _ | _ /25 |
+| vector_dbs | 4 | 5 | 4 | 3 | 5 | 21/25 |
+| indian_hr_saas | 3 | 3 | 3 | 3 | 4 | 16/25 |
+| mojo_state | 3 | 2 | 3 | 4 | 3 | 15/25 |
+| nonexistent_startup | 3 | 3 | 5 | 5 | 5 | 21/25 |
+| trivial_math | 5 | 5 | 5 | 5 | 5 | 25/25 |
+| **Total** | **3.6** | **3.6** | **4.0** | **4.0** | **4.4** | **98/125** |
+
+See `evals/rubric.md` for per-query rationale and aggregate takeaways.

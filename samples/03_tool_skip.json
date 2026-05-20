@@ -1,0 +1,36 @@
+{
+  "question": "What's 2+2?",
+  "plan": {
+    "question": "What's 2+2?",
+    "steps": [
+      {
+        "id": 1,
+        "description": "Calculate the sum of 2 and 2.",
+        "rationale": "This is a simple arithmetic problem that can be solved directly without any tools.",
+        "suggested_tool": "none"
+      }
+    ],
+    "assumptions": [
+      "The question is asking for a basic arithmetic operation."
+    ]
+  },
+  "tool_calls": [],
+  "final_answer": {
+    "question": "What's 2+2?",
+    "short_answer": "4",
+    "key_findings": [
+      "The sum of 2 and 2 is 4."
+    ],
+    "sources": [],
+    "confidence": "high",
+    "confidence_rationale": "This is a basic arithmetic operation that is universally accepted.",
+    "limitations": [],
+    "assumptions": [
+      "The question is asking for a basic arithmetic operation."
+    ],
+    "next_steps": []
+  },
+  "total_duration_ms": 5915,
+  "llm_calls": 2,
+  "approx_cost_usd": null
+}
