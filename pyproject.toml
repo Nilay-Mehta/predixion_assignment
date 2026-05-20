@@ -1,0 +1,27 @@
+[project]
+name = "predixion"
+version = "0.1.0"
+description = "CLI research agent for grounded multi-source answers."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "google-genai",
+    "httpx",
+    "pydantic",
+    "pydantic-settings",
+    "structlog",
+    "tavily-python",
+    "tenacity",
+    "trafilatura",
+    "typer",
+]
+
+[project.scripts]
+predixion = "predixion.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+package = true
