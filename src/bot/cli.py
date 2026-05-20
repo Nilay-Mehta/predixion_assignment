@@ -12,11 +12,14 @@ from bot.config import settings
 from bot.llm import get_llm
 from bot.models import FinalAnswer, Plan, RunTrace, Step
 from bot.tools import default_registry
+from bot.utils.guardrails import apply_low_confidence_guardrail
 from bot.utils.logging import configure_logging
 
 app = typer.Typer(help="bot AI research agent.")
 tools_app = typer.Typer(help="Inspect and call registered tools.")
 app.add_typer(tools_app, name="tools")
+
+BASELINE_SYSTEM = "Answer the user's research question as best you can. Be helpful and concise."
 
 
 @app.callback()
@@ -29,10 +32,31 @@ def ask(
     question: str,
     save: bool = typer.Option(True, "--save/--no-save", help="Save run trace JSON."),
     verbose: bool = typer.Option(False, "--verbose", help="Enable info-level logs."),
+    baseline: bool = typer.Option(False, "--baseline", help="Bypass tools and ask the LLM directly."),
 ) -> None:
     configure_logging(logging.INFO if verbose else logging.WARNING)
     started = time.perf_counter()
     llm = get_llm()
+    if baseline:
+        response_text = llm.complete(BASELINE_SYSTEM, question)
+        final_answer = FinalAnswer(
+            question=question,
+            short_answer=response_text,
+            key_findings=["Baseline single-LLM-call output. See short_answer."],
+            sources=[],
+            confidence="low",
+            confidence_rationale="Baseline single-LLM-call output, no grounding.",
+            limitations=["No tools used. No source grounding. May contain fabrications."],
+            assumptions=[],
+            next_steps=[],
+        )
+        final_answer = apply_low_confidence_guardrail(final_answer)
+        if save:
+            path = _save_model(final_answer, suffix="_baseline")
+            typer.echo(f"saved baseline: {path}", err=True)
+        _echo_model_json(final_answer)
+        return
+
     registry = default_registry()
     plan_result: Plan | None = None
     tool_calls = []
@@ -62,6 +86,7 @@ def ask(
             final_answer = _failure_answer(question, exc)
         else:
             final_answer = _failure_answer(question, exc)
+    final_answer = apply_low_confidence_guardrail(final_answer)
     trace = RunTrace(
         question=question,
         plan=plan_result,
@@ -142,11 +167,15 @@ def _echo_model_json(model: BaseModel) -> None:
 
 
 def _save_trace(trace: RunTrace) -> Path:
+    return _save_model(trace)
+
+
+def _save_model(model: BaseModel, *, suffix: str = "") -> Path:
     runs_dir = Path("runs")
     runs_dir.mkdir(exist_ok=True)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    path = runs_dir / f"{stamp}.json"
-    path.write_text(json.dumps(trace.model_dump(mode="json"), indent=2), encoding="utf-8")
+    path = runs_dir / f"{stamp}{suffix}.json"
+    path.write_text(json.dumps(model.model_dump(mode="json"), indent=2), encoding="utf-8")
     return path
 
 

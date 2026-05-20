@@ -14,7 +14,7 @@ class Source(BaseModel):
 class FinalAnswer(BaseModel):
     question: str
     short_answer: str
-    key_findings: list[str] = Field(min_length=1)
+    key_findings: list[str] = Field(default_factory=list)
     sources: list[Source] = Field(default_factory=list)
     confidence: Confidence
     confidence_rationale: str

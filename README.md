@@ -42,6 +42,7 @@ Useful commands:
 
 ```powershell
 bot plan "Compare open-source vector DBs"
+bot ask "Compare top 3 open-source vector databases" --baseline   # bypass the agent, ask the LLM directly (for comparison)
 bot tools list
 bot tools call github_search --query "vector database" --sort stars
 python -m bot.evals.runner
@@ -91,7 +92,11 @@ GitHub rate-limit errors are surfaced clearly, and traces preserve each tool's a
 
 The final answer is a Pydantic model, not free-form text. The synthesizer prompt says to use only tool results and never invent URLs. More importantly, code post-validates that every `FinalAnswer.sources[].url` appears in the tool results. Sources that fail grounding are removed, and if grounding collapses entirely the answer is retried or downgraded.
 
+Each `key_finding` ends with bracketed citation indices like `[1][2]` that point into the `sources` array, and the synthesizer post-validates that every index is in range. Findings without a valid citation are dropped — reviewers and end-users can trace any claim back to a specific URL.
+
 Fetched/search content also passes through a prompt-injection sniffer. Suspicious content is marked `tainted=True` and excluded from synthesis.
+
+When the agent produces a `confidence="low"` answer, the `short_answer` is automatically prefixed with `LOW CONFIDENCE - verify before relying on this answer.` so the warning travels with the output even if a downstream consumer only reads the first line.
 
 ## 5. How Would You Make This Production-Ready?
 
@@ -137,18 +142,19 @@ The latest canonical run used GitHub Models `gpt-4o-mini`.
 
 Representative traces are in `samples/`:
 
-- `samples/01_happy_path.json`
-- `samples/02_graceful_failure.json`
-- `samples/03_tool_skip.json`
+- `samples/01_happy_path.json` — vector DB comparison, high confidence, multiple grounded sources
+- `samples/02_graceful_failure.json` — nonexistent startup query, low confidence, no fabricated funding rounds
+- `samples/03_tool_skip.json` — trivial arithmetic, planner skips tools entirely, no fake citations
+- `samples/04_baseline_vs_agent.md` — side-by-side of `--baseline` (raw LLM) vs the full agent on the same query
 
 ## Future Improvements
 
 Highest-value next steps:
 
-- Add a non-agentic baseline flag and compare direct LLM output against the grounded agent.
 - Add an LLM-as-judge evaluator for grounding, completeness, and calibration.
-- Add inline citations per key finding.
 - Cache tool results on disk for faster eval iteration.
+- Weight `github_search` results by topic relevance, not just star count (mitigates Redis-as-vector-DB style false positives).
+- Pass tool result URLs into the planner's context so subsequent `fetch_url` steps don't fabricate placeholder URLs.
 - Run independent tool steps asynchronously.
 - Add memory for follow-up questions.
 - Wrap the agent with FastAPI for a production-shaped API surface.

@@ -10,6 +10,7 @@ from bot.agent import execute_plan, make_plan, synthesize
 from bot.llm import get_llm
 from bot.models import FinalAnswer, Plan, RunTrace, Step
 from bot.tools import default_registry
+from bot.utils.guardrails import apply_low_confidence_guardrail
 
 ROOT = Path.cwd()
 QUERIES_PATH = ROOT / "evals" / "queries.yaml"
@@ -77,6 +78,7 @@ def _run_one(question: str) -> tuple[RunTrace, bool]:
                 ],
             )
         final_answer = _failure_answer(question, exc)
+    final_answer = apply_low_confidence_guardrail(final_answer)
 
     return (
         RunTrace(
