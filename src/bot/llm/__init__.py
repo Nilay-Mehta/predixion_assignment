@@ -1,10 +1,12 @@
 from bot.config import settings
 from bot.llm.base import LLMProvider
 from bot.llm.gemini import GeminiProvider
+from bot.llm.github_models import GithubModelsProvider
 from bot.llm.groq import GroqProvider
 
 PROVIDERS = {
     "gemini": GeminiProvider,
+    "github_models": GithubModelsProvider,
     "groq": GroqProvider,
 }
 
@@ -18,4 +20,11 @@ def get_llm() -> LLMProvider:
     return provider()
 
 
-__all__ = ["GeminiProvider", "GroqProvider", "LLMProvider", "PROVIDERS", "get_llm"]
+__all__ = [
+    "GeminiProvider",
+    "GithubModelsProvider",
+    "GroqProvider",
+    "LLMProvider",
+    "PROVIDERS",
+    "get_llm",
+]

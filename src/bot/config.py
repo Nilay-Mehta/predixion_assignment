@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     google_api_key: str | None = None
     groq_api_key: str | None = None
     groq_model: str = "llama-3.3-70b-versatile"
+    github_models_token: str | None = None
+    github_models_model: str = "gpt-4o-mini"
+    github_models_base_url: str = "https://models.inference.ai.azure.com"
     tavily_api_key: str | None = None
     github_token: str | None = None
     max_plan_steps: int = 6

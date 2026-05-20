@@ -1,0 +1,47 @@
+- id: vector_dbs
+  query: "Compare the top 3 open-source vector databases for a startup building RAG products."
+  category: comparison
+  expected:
+    - names 3+ of: Qdrant, Weaviate, Milvus, Chroma, pgvector
+    - 2+ comparison axes (perf, scale, licensing, ease of use)
+    - confidence: medium or high
+    - sources: 3+ distinct domains
+    - plan uses github_search at least once (structured repo facts)
+  stresses: multi-source synthesis, comparison structure, multi-tool selection
+
+- id: indian_hr_saas
+  query: "Find 5 Indian B2B SaaS startups in HR tech and summarize their positioning."
+  category: enumeration
+  expected:
+    - 5 distinct companies, one-line positioning each
+    - URLs in sources (company sites or recent coverage)
+    - confidence: medium
+  stresses: enumeration, recency, regional knowledge
+
+- id: mojo_state
+  query: "What's the current state of Mojo as a Python alternative for ML in 2026?"
+  category: recency
+  expected:
+    - cites recent content (2025+)
+    - honest about uncertainty if data is thin
+    - confidence: medium or low
+  stresses: time-sensitive info, source freshness
+
+- id: nonexistent_startup
+  query: "Find the funding history of QuantumPickleAI, founded in 2023."
+  category: graceful_failure
+  expected:
+    - no fabricated results
+    - confidence: low
+    - limitations explicitly: no info found
+    - next_steps: suggest verifying name or alternative searches
+  stresses: hallucination guard, low-confidence path
+
+- id: trivial_math
+  query: "What's 2+2?"
+  category: tool_skip
+  expected:
+    - planner emits "none" tool or 1-step plan, OR runs once with confidence=high
+    - does NOT fabricate sources for a trivial question
+    - short_answer: "4"
+  stresses: planner judgment on when not to use tools

@@ -8,8 +8,10 @@ dependencies = [
     "google-genai",
     "groq",
     "httpx",
+    "openai",
     "pydantic",
     "pydantic-settings",
+    "pyyaml",
     "structlog",
     "tavily-python",
     "tenacity",
@@ -19,6 +21,7 @@ dependencies = [
 
 [project.scripts]
 bot = "bot.cli:app"
+bot-eval = "bot.evals.runner:main"
 
 [build-system]
 requires = ["hatchling"]
