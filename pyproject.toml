@@ -1,11 +1,12 @@
 [project]
-name = "predixion"
+name = "bot"
 version = "0.1.0"
 description = "CLI research agent for grounded multi-source answers."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "google-genai",
+    "groq",
     "httpx",
     "pydantic",
     "pydantic-settings",
@@ -17,7 +18,7 @@ dependencies = [
 ]
 
 [project.scripts]
-predixion = "predixion.cli:app"
+bot = "bot.cli:app"
 
 [build-system]
 requires = ["hatchling"]
